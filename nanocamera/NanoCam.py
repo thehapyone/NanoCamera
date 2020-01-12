@@ -1,125 +1,126 @@
 # Import the needed libraries
 import cv2
 
-class Camera():
-	def __init__(self, camera_type=0, camera_id=1, flip=0, width=640, height=480, fps=24, enforce_fps = False)
-		# intialize all variables
-		self.fps = fps
-		self.camera_type = camera_type
-		self.camera_id = camera_id
-		self.flip_method = flip
-		self.width = width
-		self.height = height
-		self.enforce_fps = enforce_fps
 
-		# tracks if a CAM opened was succesful or not
-		self.__cam_opened = False
+class Camera:
+    def __init__(self, camera_type=0, camera_id=1, flip=0, width=640, height=480, fps=24, enforce_fps=False):
+        # intialize all variables
+        self.fps = fps
+        self.camera_type = camera_type
+        self.camera_id = camera_id
+        self.flip_method = flip
+        self.width = width
+        self.height = height
+        self.enforce_fps = enforce_fps
 
-		# create the OpenCV camera inteface
-		self.cap = None
+        # tracks if a CAM opened was succesful or not
+        self.__cam_opened = False
 
-		# open the camera interface
-		self.open()
+        # create the OpenCV camera inteface
+        self.cap = None
 
-	def __csi_pipeline (self) :   
-	    return ('nvarguscamerasrc ! ' 
-	    'video/x-raw(memory:NVMM), '
-	    'width=(int)%d, height=(int)%d, '
-	    'format=(string)NV12, framerate=(fraction)%d/1 ! '
-	    'nvvidconv flip-method=%d ! '
-	    'video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! '
-	    'videoconvert ! '
-	    'video/x-raw, format=(string)BGR ! appsink'  % (self.width, self.height, self.fps, self.flip_method, self.width, self.height))
+        # open the camera interface
+        self.open()
 
-	def __usb_pipeline (self, device_name="/dev/video1") :   
-	    return ('v4l2src device=%s ! ' 
-	    'video/x-raw, '
-	    'width=(int)%d, height=(int)%d, '
-	    'format=(string)YUY2, framerate=(fraction)%d/1 ! '
-	    'videoconvert ! '
-	    'video/x-raw, format=BGR ! '
-	    'appsink'  % (device_name, self.width, self.height, self.fps))
+    def __csi_pipeline(self):
+        return ('nvarguscamerasrc ! '
+                'video/x-raw(memory:NVMM), '
+                'width=(int)%d, height=(int)%d, '
+                'format=(string)NV12, framerate=(fraction)%d/1 ! '
+                'nvvidconv flip-method=%d ! '
+                'video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! '
+                'videoconvert ! '
+                'video/x-raw, format=(string)BGR ! appsink' % (
+                    self.width, self.height, self.fps, self.flip_method, self.width, self.height))
 
-	def __usb_pipeline_enforce_fps (self, device_name="/dev/video1") :   
-	    return ('v4l2src device=%s ! ' 
-	    'video/x-raw, '
-	    'width=(int)%d, height=(int)%d, '
-	    'format=(string)YUY2, framerate=(fraction)%d/1 ! '
-	    'videorate ! '
-	    'video/x-raw, framerate=(fraction)%d/1 ! '
-	    'videoconvert ! '
-	    'video/x-raw, format=BGR ! '
-	    'appsink'  % (device_name, self.width, self.height, self.fps, self.fps))
+    def __usb_pipeline(self, device_name="/dev/video1"):
+        return ('v4l2src device=%s ! '
+                'video/x-raw, '
+                'width=(int)%d, height=(int)%d, '
+                'format=(string)YUY2, framerate=(fraction)%d/1 ! '
+                'videoconvert ! '
+                'video/x-raw, format=BGR ! '
+                'appsink' % (device_name, self.width, self.height, self.fps))
 
-	def open(self):
-		# open the camera inteface
-		# determine what type of camera to open
-		if self.camera_type == 0:
-			# then CSI camera
-			self.__open_csi()
-		else: 
-			# it is USB camera
-			self.__open_usb()
+    def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
+        return ('v4l2src device=%s ! '
+                'video/x-raw, '
+                'width=(int)%d, height=(int)%d, '
+                'format=(string)YUY2, framerate=(fraction)%d/1 ! '
+                'videorate ! '
+                'video/x-raw, framerate=(fraction)%d/1 ! '
+                'videoconvert ! '
+                'video/x-raw, format=BGR ! '
+                'appsink' % (device_name, self.width, self.height, self.fps, self.fps))
 
+    def open(self):
+        # open the camera inteface
+        # determine what type of camera to open
+        if self.camera_type == 0:
+            # then CSI camera
+            self.__open_csi()
+        else:
+            # it is USB camera
+            self.__open_usb()
 
-	def __open_csi(self):
-		# opens an inteface to the CSI camera
-		try:
-			# initialize the first CSI camera
-			self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
-			self.__cam_opened = True
-		except:
-			raise RuntimeError('Error: Could not initialize camera.')
+    def __open_csi(self):
+        # opens an inteface to the CSI camera
+        try:
+            # initialize the first CSI camera
+            self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
+            self.__cam_opened = True
+        except RuntimeError:
+            raise RuntimeError('Error: Could not initialize camera.')
 
-	def __open_usb(self):
-		# opens an interface to the USB camera
-		try:
-			# initialize the USB camera
-			self.camera_name = "/dev/video"+self.camera_id
-			# check if enforcement is enabled
-			if self.enforce_fps:
-				self.cap = cv2.VideoCapture(self.__usb_pipeline_enforce_fps(self.camera_name), cv2.CAP_GSTREAMER)
-			else:
-				self.cap = cv2.VideoCapture(self.__usb_pipeline(self.camera_name), cv2.CAP_GSTREAMER)
-			self.__cam_opened = True
-		except:
-			raise RuntimeError('Error: Could not initialize USB camera.')
+    def __open_usb(self):
+        # opens an interface to the USB camera
+        try:
+            # initialize the USB camera
+            self.camera_name = "/dev/video" + str(self.camera_id)
+            # check if enforcement is enabled
+            if self.enforce_fps:
+                self.cap = cv2.VideoCapture(self.__usb_pipeline_enforce_fps(self.camera_name), cv2.CAP_GSTREAMER)
+            else:
+                self.cap = cv2.VideoCapture(self.__usb_pipeline(self.camera_name), cv2.CAP_GSTREAMER)
+            self.__cam_opened = True
+        except RuntimeError:
+            raise RuntimeError('Error: Could not initialize USB camera.')
 
-	def __read(self):
-		# reading images
-		ret, image = self.cap.read()
+    def __read(self):
+        # reading images
+        ret, image = self.cap.read()
         if ret:
             return image
         else:
             raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
-    	# read the camera stream
-    	try:
-    		self.frame = self.__read()
-    		return self.frame
-    	except:
-    		raise RuntimeError('Error: Could not read image from camera')
+        # read the camera stream
+        try:
+            frame = self.__read()
+            return frame
+        except RuntimeError:
+            raise RuntimeError('Error: Could not read image from camera')
 
-	def release(self):
-		# destroy the opencv camera object
-		try:
-			if self.cap is not None:
-				self.cap.release()
-			self.__cam_opened = False
-		except:
-			raise RuntimeError('Error: Could not release camera')
-
-
+    def release(self):
+        # destroy the opencv camera object
+        try:
+            if self.cap is not None:
+                self.cap.release()
+            # update the cam opened variable
+            self.__cam_opened = False
+        except RuntimeError:
+            raise RuntimeError('Error: Could not release camera')
 
 
 if __name__ == '__main__':
+    # testing CSI camera
+    camera = Camera(flip=0, width=640, height=480, fps=30)
 
-	# testing CSI camera
-	camera = Camera(flip=0, width=640, height=480, fps=30)
+    # testing USB camera
+    camera2 = Camera()
+    # read the camera data
+    frame = camera.read()
 
-	# read the camera data
-	frame = camera.read()
-
-	# close the camera object
-	camera.release()
+    # close the camera object
+    camera.release()
