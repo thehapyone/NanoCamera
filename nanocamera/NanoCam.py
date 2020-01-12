@@ -2,7 +2,7 @@
 import cv2
 
 class Camera():
-	def __init__(self, camera_type=0, camera_id=1, flip=0, width, height, fps=24, enforce_fps = False)
+	def __init__(self, camera_type=0, camera_id=1, flip=0, width=640, height=480, fps=24, enforce_fps = False)
 		# intialize all variables
 		self.fps = fps
 		self.camera_type = camera_type
@@ -12,13 +12,16 @@ class Camera():
 		self.height = height
 		self.enforce_fps = enforce_fps
 
+		# tracks if a CAM opened was succesful or not
+		self.__cam_opened = False
+
 		# create the OpenCV camera inteface
 		self.cap = None
 
 		# open the camera interface
 		self.open()
 
-	def csi_pipeline (self) :   
+	def __csi_pipeline (self) :   
 	    return ('nvarguscamerasrc ! ' 
 	    'video/x-raw(memory:NVMM), '
 	    'width=(int)%d, height=(int)%d, '
@@ -28,7 +31,16 @@ class Camera():
 	    'videoconvert ! '
 	    'video/x-raw, format=(string)BGR ! appsink'  % (self.width, self.height, self.fps, self.flip_method, self.width, self.height))
 
-	def usb_pipeline (camara_type="/dev/video1", capture_width=image_width, capture_height=image_height, framerate=30) :   
+	def __usb_pipeline (self, device_name="/dev/video1") :   
+	    return ('v4l2src device=%s ! ' 
+	    'video/x-raw, '
+	    'width=(int)%d, height=(int)%d, '
+	    'format=(string)YUY2, framerate=(fraction)%d/1 ! '
+	    'videoconvert ! '
+	    'video/x-raw, format=BGR ! '
+	    'appsink'  % (device_name, self.width, self.height, self.fps))
+
+	def __usb_pipeline_enforce_fps (self, device_name="/dev/video1") :   
 	    return ('v4l2src device=%s ! ' 
 	    'video/x-raw, '
 	    'width=(int)%d, height=(int)%d, '
@@ -37,30 +49,77 @@ class Camera():
 	    'video/x-raw, framerate=(fraction)%d/1 ! '
 	    'videoconvert ! '
 	    'video/x-raw, format=BGR ! '
-	    'appsink'  % (camara_type, capture_width,capture_height, framerate, framerate))
+	    'appsink'  % (device_name, self.width, self.height, self.fps, self.fps))
 
 	def open(self):
 		# open the camera inteface
+		# determine what type of camera to open
+		if self.camera_type == 0:
+			# then CSI camera
+			self.__open_csi()
+		else: 
+			# it is USB camera
+			self.__open_usb()
+
 
 	def __open_csi(self):
 		# opens an inteface to the CSI camera
 		try:
-			self.cap = cv2.VideoCapture(usb_pipeline(camara_type="/dev/video2"), cv2.CAP_GSTREAMER)
+			# initialize the first CSI camera
+			self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
+			self.__cam_opened = True
 		except:
-			raise RuntimeError('Could not initialize camera.')
+			raise RuntimeError('Error: Could not initialize camera.')
 
-	def read(self):
-		# reading elements
+	def __open_usb(self):
+		# opens an interface to the USB camera
+		try:
+			# initialize the USB camera
+			self.camera_name = "/dev/video"+self.camera_id
+			# check if enforcement is enabled
+			if self.enforce_fps:
+				self.cap = cv2.VideoCapture(self.__usb_pipeline_enforce_fps(self.camera_name), cv2.CAP_GSTREAMER)
+			else:
+				self.cap = cv2.VideoCapture(self.__usb_pipeline(self.camera_name), cv2.CAP_GSTREAMER)
+			self.__cam_opened = True
+		except:
+			raise RuntimeError('Error: Could not initialize USB camera.')
+
+	def __read(self):
+		# reading images
+		ret, image = self.cap.read()
+        if ret:
+            return image
+        else:
+            raise RuntimeError('Error: Could not read image from camera')
+
+    def read(self):
+    	# read the camera stream
+    	try:
+    		self.frame = self.__read()
+    		return self.frame
+    	except:
+    		raise RuntimeError('Error: Could not read image from camera')
 
 	def release(self):
+		# destroy the opencv camera object
+		try:
+			if self.cap is not None:
+				self.cap.release()
+			self.__cam_opened = False
+		except:
+			raise RuntimeError('Error: Could not release camera')
+
 
 
 
 if __name__ == '__main__':
 
-	# intialize the camera instance
+	# testing CSI camera
+	camera = Camera(flip=0, width=640, height=480, fps=30)
 
-	cap = Camera(type=0, camera_id=0, flip=0, width=4, height=5, fps=20, enforce_fps = True)
+	# read the camera data
+	frame = camera.read()
 
-	# check if camera is opened
-	if cap.isOpened
+	# close the camera object
+	camera.release()
