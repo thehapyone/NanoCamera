@@ -1,13 +1,12 @@
 # Import the needed libraries
 import cv2
 
-
 class Camera:
-    def __init__(self, camera_type=0, camera_id=1, flip=0, width=640, height=480, fps=24, enforce_fps=False):
-        # intialize all variables
+    def __init__(self, camera_type=0, device_id=1, flip=0, width=640, height=480, fps=24, enforce_fps=False):
+        # initialize all variables
         self.fps = fps
         self.camera_type = camera_type
-        self.camera_id = camera_id
+        self.camera_id = device_id
         self.flip_method = flip
         self.width = width
         self.height = height
