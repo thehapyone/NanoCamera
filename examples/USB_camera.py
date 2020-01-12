@@ -1,15 +1,19 @@
 """
-Using the NanoCamera with CSI Camera
+Using the NanoCamera with USB Cameras
 @author: Ayo Ayibiowu
 
 """
+
 import cv2
 
 from nanocamera.NanoCam import Camera
 
 if __name__ == '__main__':
+    # you can see connected USB cameras by running : ls /dev/video* on the terminal
+    # for usb camera /dev/video2, the device_id will be 2
+
     # Create the Camera instance
-    camera = Camera(flip=0, width=640, height=480, fps=30)
+    camera = Camera(camera_type=1, device_id=1, width=640, height=480, fps=30)
     print('CSI Camera is now ready')
     while True:
         try:
