@@ -82,10 +82,10 @@ ls /dev/video*
 
 ### Reading Camera
 
-Call ``read()`` to read the latest image as a ``numpy.ndarray`` of data type ``np.uint8`` and shape ``(224, 224, 3)``.  The color format is ``BGR8``.
+Call ``read()`` to read the latest image as a ``numpy.ndarray``. The color format is ``BGR8``.
 
 ```python
-image = camera.read()
+frame = camera.read()
 ```
 
 A Simple program to read from the CSI camera and display with OpenCV
