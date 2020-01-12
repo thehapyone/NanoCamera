@@ -110,16 +110,3 @@ class Camera:
             self.__cam_opened = False
         except RuntimeError:
             raise RuntimeError('Error: Could not release camera')
-
-
-if __name__ == '__main__':
-    # testing CSI camera
-    camera = Camera(flip=0, width=640, height=480, fps=30)
-
-    # testing USB camera
-    camera2 = Camera()
-    # read the camera data
-    frame = camera.read()
-
-    # close the camera object
-    camera.release()
