@@ -12,12 +12,13 @@ class Camera():
 		self.height = height
 		self.enforce_fps = enforce_fps
 
+		# create the OpenCV camera inteface
+		self.cap = None
+
 		# open the camera interface
 		self.open()
 
-
-
-	def gstreamer_pipeline (capture_width=image_width, capture_height=image_height, framerate=30, flip_method=0) :   
+	def csi_pipeline (self) :   
 	    return ('nvarguscamerasrc ! ' 
 	    'video/x-raw(memory:NVMM), '
 	    'width=(int)%d, height=(int)%d, '
@@ -25,7 +26,7 @@ class Camera():
 	    'nvvidconv flip-method=%d ! '
 	    'video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! '
 	    'videoconvert ! '
-	    'video/x-raw, format=(string)BGR ! appsink'  % (capture_width,capture_height,framerate,flip_method,capture_width,capture_height))
+	    'video/x-raw, format=(string)BGR ! appsink'  % (self.width, self.height, self.fps, self.flip_method, self.width, self.height))
 
 	def usb_pipeline (camara_type="/dev/video1", capture_width=image_width, capture_height=image_height, framerate=30) :   
 	    return ('v4l2src device=%s ! ' 
@@ -40,6 +41,13 @@ class Camera():
 
 	def open(self):
 		# open the camera inteface
+
+	def __open_csi(self):
+		# opens an inteface to the CSI camera
+		try:
+			self.cap = cv2.VideoCapture(usb_pipeline(camara_type="/dev/video2"), cv2.CAP_GSTREAMER)
+		except:
+			raise RuntimeError('Could not initialize camera.')
 
 	def read(self):
 		# reading elements
