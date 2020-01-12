@@ -5,11 +5,12 @@ Using the NanoCamera with CSI Camera
 """
 import cv2
 
-from nanocamera.NanoCam import Camera
+# from nanocamera.NanoCam import Camera
+import nanocamera as nano
 
 if __name__ == '__main__':
     # Create the Camera instance
-    camera = Camera(flip=0, width=640, height=480, fps=30)
+    camera = nano.Camera(flip=0, width=640, height=480, fps=30)
     print('CSI Camera is now ready')
     while True:
         try:
