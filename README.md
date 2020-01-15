@@ -23,7 +23,7 @@ This library requires OpenCV to be installed to work.
 Installation is simple. Can be installed in two ways with Pip or Manually.
 ##### Pip Installation
 ```bash
-pip3 install NanoCamera
+pip3 install nanocamera
 ```
 ##### Manual Installation
 ```bash
