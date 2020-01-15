@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
 	name="nanocamera",
-	version="0.1.1",
+	version="0.1.2",
 	author="Ayo Ayibiowu",
 	author_email="charlesayibiowu@hotmail.com",
 	description="A Python camera interface for the Jetson Nano",
