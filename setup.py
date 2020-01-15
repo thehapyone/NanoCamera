@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
 	long_description = fh.read()
 
 setup(
-	name="NanoCamera",
+	name="nanocamera",
 	version="0.1.0",
 	author="Ayo Ayibiowu",
 	author_email="charlesayibiowu@hotmail.com",
