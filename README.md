@@ -33,11 +33,11 @@ sudo python3 setup.py install
 ```
 
 ## Usage & Example
-Using NanoCamera is super easy. Below we show some usage examples.  You can find more in the [examples](examples).
+Using NanoCamera is super easy. Below we show some usage examples.  You can find more in the [examples](https://github.com/thehapyone/NanoCamera/tree/master/examples).
 ### Working with CSI Camera
 For CSI Cameras, the ``camera_type = 0``.
 
-Find here for full [CSI camera example](examples/CSI_camera.py)
+Find here for full [CSI camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/CSI_camera.py)
 
 Python Example - 
 Create CSI camera using default FPS=30, default image size: 640 by 480 and with no rotation (flip=0)
@@ -56,7 +56,7 @@ if image is inverted, set ``flip = 2``
 
 ### Working with USB Camera
 For USB Cameras, set the ``camera_type = 1``, and set the ``device_id`` as well
-Find here for full [USB camera example](examples/USB_camera.py)
+Find here for full [USB camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera.py)
 
 Python Example - 
 Create USB camera connected to ``/dev/video1``
