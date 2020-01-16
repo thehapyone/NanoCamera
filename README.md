@@ -12,9 +12,11 @@ It currently supports the following types of camera:
 * Support different Camera Flip Mode (Counterclockwise, Rotate 180 degress, Clockwise - 90 degrees, Horizontal Flip, Vertical Flip)
 * Can be used with multiple cameras
 * Support Frame rate enforcement. *Only available for USB cameras.
+* Frame rate enforcement ensures the cameras work at the given frame rate using gstreamer videorate plugin
 * It is based on [Accelerated GStreamer Plugins](https://developer.download.nvidia.com/embedded/L4T/r32_Release_v1.0/Docs/Accelerated_GStreamer_User_Guide.pdf?uIzwdFeQNE8N-vV776ZCUUEbiJxYagieFEqUoYFM9XSf9tbslxWqFKnVHu8erbZZS20A7ADAIgmSQJvXZTb0LkuGl9GoD5HJz4263HcmYWZW0t2OeFSJKZOfuWZ-lF51Pva2DSDtu2QPs-junm7BhMB_9AMQRwExuDb5zIhf_o8PIbA4KKo)
 * Should work with other Jetson boards like Jetson TX1, TX2 and others (Not tested)
 * Easily read images as ``numpy`` arrays with ``image = camera.read()``
+* Supports threaded read - available to all camera types. To enable a fast threaded read, you will to enable the enforce_fps: ``enforce_fps = True``
 
 ## Requirements
 This library requires OpenCV to be installed to work.
