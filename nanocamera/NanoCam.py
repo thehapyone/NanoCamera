@@ -1,4 +1,5 @@
 # Import the needed libraries
+import time
 from threading import Thread
 
 import cv2
@@ -71,7 +72,9 @@ class Camera:
             self.__open_usb()
         # enable a threaded read if enforce_fps is active
         if self.enforce_fps:
-            self.cam_thread = Thread()
+            self.cam_thread = Thread(target=self.__thread_read(), name="NanoCam Thread Read")
+            self.cam_thread.daemon = True
+            self.cam_thread.start()
 
     def __open_csi(self):
         # opens an inteface to the CSI camera
@@ -96,6 +99,19 @@ class Camera:
         except RuntimeError:
             raise RuntimeError('Error: Could not initialize USB camera.')
 
+    def __thread_read(self):
+        # uses thread to read
+        while self.__cam_opened:
+            try:
+                self.frame = self.__read()
+
+            except RuntimeError:
+                raise RuntimeError('Error: Could not read image from camera')
+            except KeyboardInterrupt:
+                # delete the camera resource
+                self.release()
+                break
+
     def __read(self):
         # reading images
         ret, image = self.cap.read()
@@ -117,6 +133,9 @@ class Camera:
     def release(self):
         # destroy the opencv camera object
         try:
+            # update the cam opened variable
+            self.__cam_opened = False
+            time.sleep(1)
             if self.cap is not None:
                 self.cap.release()
             # update the cam opened variable
