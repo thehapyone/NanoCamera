@@ -13,6 +13,9 @@ class Camera:
         self.height = height
         self.enforce_fps = enforce_fps
 
+        # created a thread for enforcing FPS camera read and write
+        self.cam_thread = None
+
         # tracks if a CAM opened was succesful or not
         self.__cam_opened = False
 
