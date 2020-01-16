@@ -1,5 +1,4 @@
 # Import the needed libraries
-import time
 from threading import Thread
 
 import cv2
@@ -106,11 +105,9 @@ class Camera:
                 self.frame = self.__read()
 
             except RuntimeError:
-                raise RuntimeError('Error: Could not read image from camera')
-            except KeyboardInterrupt:
-                # delete the camera resource
-                self.release()
-                break
+                raise RuntimeError('Thread Error: Could not read image from camera')
+        # reset the thread object:
+        self.cam_thread = None
 
     def __read(self):
         # reading images
@@ -135,7 +132,10 @@ class Camera:
         try:
             # update the cam opened variable
             self.__cam_opened = False
-            time.sleep(1)
+            # ensure the camera thread stops running
+            if self.enforce_fps:
+                if self.cam_thread is not None:
+                    self.cam_thread.join()
             if self.cap is not None:
                 self.cap.release()
             # update the cam opened variable
