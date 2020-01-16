@@ -15,6 +15,8 @@ class Camera:
 
         # created a thread for enforcing FPS camera read and write
         self.cam_thread = None
+        # holds the frame data
+        self.frame = None
 
         # tracks if a CAM opened was succesful or not
         self.__cam_opened = False
@@ -100,8 +102,10 @@ class Camera:
     def read(self):
         # read the camera stream
         try:
-            frame = self.__read()
-            return frame
+            if self.enforce_fps:
+                return self.frame
+            else:
+                return self.__read()
         except RuntimeError:
             raise RuntimeError('Error: Could not read image from camera')
 
