@@ -20,6 +20,10 @@ It currently supports the following types of camera:
 
 ## Requirements
 This library requires OpenCV to be installed to work.
+If you don't have OpenCV, you can install one with pip:
+```bash
+pip3 install opencv-python 
+```
 
 ## Install
 Installation is simple. Can be installed in two ways with Pip or Manually.
