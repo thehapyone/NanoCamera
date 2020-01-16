@@ -1,4 +1,6 @@
 # Import the needed libraries
+from threading import Thread
+
 import cv2
 
 
@@ -67,6 +69,9 @@ class Camera:
         else:
             # it is USB camera
             self.__open_usb()
+        # enable a threaded read if enforce_fps is active
+        if self.enforce_fps:
+            self.cam_thread = Thread()
 
     def __open_csi(self):
         # opens an inteface to the CSI camera
