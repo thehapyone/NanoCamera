@@ -76,7 +76,7 @@ class Camera:
         return self
 
     def start(self):
-        self.cam_thread = Thread(target=self.__thread_read())
+        self.cam_thread = Thread(target=self.__thread_read)
         self.cam_thread.daemon = True
         self.cam_thread.start()
         return self
