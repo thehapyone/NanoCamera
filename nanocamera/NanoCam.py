@@ -1,4 +1,5 @@
 # Import the needed libraries
+import time
 from threading import Thread
 
 import cv2
@@ -105,6 +106,7 @@ class Camera:
 
     def __thread_read(self):
         # uses thread to read
+        time.sleep(1.5)
         while self.__cam_opened:
             try:
                 self.frame = self.__read()
@@ -126,7 +128,12 @@ class Camera:
         # read the camera stream
         try:
             if self.enforce_fps:
-                return self.frame
+                # if threaded read is enabled, it is possible the thread hasn't run yet
+                if self.frame is not None:
+                    return self.frame
+                else:
+                    # we need to wait for the thread to be ready.
+                    return self.__read()
             else:
                 return self.__read()
         except RuntimeError:
