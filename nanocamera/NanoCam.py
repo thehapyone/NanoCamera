@@ -71,7 +71,7 @@ class Camera:
             self.__open_usb()
         # enable a threaded read if enforce_fps is active
         if self.enforce_fps:
-            self.cam_thread = Thread(target=self.__thread_read(), name="NanoCam Thread Read")
+            self.cam_thread = Thread(target=self.__thread_read())
             self.cam_thread.daemon = True
             self.cam_thread.start()
 
