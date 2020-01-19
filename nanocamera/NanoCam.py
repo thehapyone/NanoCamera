@@ -28,6 +28,9 @@ class Camera:
 
         # open the camera interface
         self.open()
+        # enable a threaded read if enforce_fps is active
+        if self.enforce_fps:
+            self.start()
 
     def __csi_pipeline(self):
         return ('nvarguscamerasrc ! '
@@ -69,11 +72,13 @@ class Camera:
         else:
             # it is USB camera
             self.__open_usb()
-        # enable a threaded read if enforce_fps is active
-        if self.enforce_fps:
-            self.cam_thread = Thread(target=self.__thread_read())
-            self.cam_thread.daemon = True
-            self.cam_thread.start()
+        return self
+
+    def start(self):
+        self.cam_thread = Thread(target=self.__thread_read())
+        self.cam_thread.daemon = True
+        self.cam_thread.start()
+        return self
 
     def __open_csi(self):
         # opens an inteface to the CSI camera
