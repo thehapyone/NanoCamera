@@ -66,7 +66,7 @@ class Camera:
                 'format=(string)YUY2, framerate=(fraction)%d/1 ! '
                 'videoconvert ! '
                 'video/x-raw, format=BGR ! '
-                'appsink' % (device_name, self.width, self.height, self.fps))
+                'appsink' % (location, self.width, self.height, self.fps))
 
     def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
