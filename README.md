@@ -1,5 +1,5 @@
 # NanoCamera [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/thehapyone/NanoCamera/blob/master/LICENSE)
-A simple to use camera interface for the Jetson Nano for working with USB and CSI cameras in Python.
+A simple to use camera interface for the Jetson Nano for working with USB and CSI cameras in Python 3.
 
 It currently supports the following types of camera:
 *  Works with CSI Cameras (Tested and Works)

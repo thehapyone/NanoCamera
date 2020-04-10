@@ -53,6 +53,21 @@ class Camera:
                 'video/x-raw, format=BGR ! '
                 'appsink' % (device_name, self.width, self.height, self.fps))
 
+
+    def _gst_str(self):
+        return 'rtspsrc location={} latency=0 ! rtph264depay ! h264parse ! omxh264dec ! videorate ! videoscale ! video/x-raw,framerate={}/1,width={},height={} ! videoconvert ! video/x-raw,format=(string)BGR ! queue ! appsink sync=false'.format(self.capture_source, self.capture_fps, self.capture_width, self.capture_height)
+
+    def __rstp_pipeline(self, location="rtsp://localhost:8080"):
+        return ('rtspsrc location=%s latency=0 ! '
+                'rtph264depay ! h264parse ! omxh264dec ! '
+                'videorate ! videoscale ! '
+                'video/x-raw, '
+                'width=(int)%d, height=(int)%d, '
+                'format=(string)YUY2, framerate=(fraction)%d/1 ! '
+                'videoconvert ! '
+                'video/x-raw, format=BGR ! '
+                'appsink' % (device_name, self.width, self.height, self.fps))
+
     def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
                 'video/x-raw, '
