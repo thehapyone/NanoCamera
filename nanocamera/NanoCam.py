@@ -1,16 +1,18 @@
 # Import the needed libraries
+import cv2
 import time
 from threading import Thread
 
-import cv2
-
 
 class Camera:
-    def __init__(self, camera_type=0, device_id=1, flip=0, width=640, height=480, fps=30, enforce_fps=False):
+    def __init__(self, camera_type=0, device_id=1, rtsp_source="localhost:8080", flip=0, width=640, height=480, fps=30,
+                 enforce_fps=False):
         # initialize all variables
         self.fps = fps
         self.camera_type = camera_type
         self.camera_id = device_id
+        # for rtsp camera only
+        self.rtsp_location = rtsp_source
         self.flip_method = flip
         self.width = width
         self.height = height
@@ -53,11 +55,7 @@ class Camera:
                 'video/x-raw, format=BGR ! '
                 'appsink' % (device_name, self.width, self.height, self.fps))
 
-
-    def _gst_str(self):
-        return 'rtspsrc location={} latency=0 ! rtph264depay ! h264parse ! omxh264dec ! videorate ! videoscale ! video/x-raw,framerate={}/1,width={},height={} ! videoconvert ! video/x-raw,format=(string)BGR ! queue ! appsink sync=false'.format(self.capture_source, self.capture_fps, self.capture_width, self.capture_height)
-
-    def __rstp_pipeline(self, location="rtsp://localhost:8080"):
+    def __rtsp_pipeline_bak(self, location="localhost:8080"):
         return ('rtspsrc location=%s latency=0 ! '
                 'rtph264depay ! h264parse ! omxh264dec ! '
                 'videorate ! videoscale ! '
@@ -66,7 +64,18 @@ class Camera:
                 'format=(string)YUY2, framerate=(fraction)%d/1 ! '
                 'videoconvert ! '
                 'video/x-raw, format=BGR ! '
-                'appsink' % (location, self.width, self.height, self.fps))
+                'appsink' % ("rtsp://" + location, self.width, self.height, self.fps))
+
+    def __rtsp_pipeline(self, location="localhost:8080"):
+        return ('rtspsrc location=%s latency=0 ! '
+                'decodebin ! nvvidconv ! '
+                'videorate ! videoscale ! '
+                'video/x-raw, '
+                'width=(int)%d, height=(int)%d, '
+                'framerate=(fraction)%d/1 ! '
+                'videoconvert ! '
+                'video/x-raw, format=BGR ! '
+                'appsink' % ("rtsp://" + location, self.width, self.height, self.fps))
 
     def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
@@ -85,6 +94,9 @@ class Camera:
         if self.camera_type == 0:
             # then CSI camera
             self.__open_csi()
+        elif self.camera_type == 2:
+            # rtsp camera
+            self.__open_rtsp()
         else:
             # it is USB camera
             self.__open_usb()
@@ -118,6 +130,15 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             raise RuntimeError('Error: Could not initialize USB camera.')
+
+    def __open_rtsp(self):
+        # opens an interface to the RTSP location
+        try:
+            # starts the rtsp client
+            self.cap = cv2.VideoCapture(self.__rtsp_pipeline(self.rtsp_location), cv2.CAP_GSTREAMER)
+            self.__cam_opened = True
+        except RuntimeError:
+            raise RuntimeError('Error: Could not initialize RTSP camera.')
 
     def __thread_read(self):
         # uses thread to read
