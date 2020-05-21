@@ -5,14 +5,14 @@ from threading import Thread
 
 
 class Camera:
-    def __init__(self, camera_type=0, device_id=1, rtsp_source="localhost:8080", flip=0, width=640, height=480, fps=30,
+    def __init__(self, camera_type=0, device_id=1, source="localhost:8080", flip=0, width=640, height=480, fps=30,
                  enforce_fps=False):
         # initialize all variables
         self.fps = fps
         self.camera_type = camera_type
         self.camera_id = device_id
         # for rtsp camera only
-        self.rtsp_location = rtsp_source
+        self.rtsp_location = source
         self.flip_method = flip
         self.width = width
         self.height = height
@@ -67,8 +67,8 @@ class Camera:
                 'appsink' % ("rtsp://" + location, self.width, self.height, self.fps))
 
     def __rtsp_pipeline(self, location="localhost:8080"):
-        return ('rtspsrc location=%s latency=0 ! '
-                'decodebin ! nvvidconv ! '
+        return ('rtspsrc location=%s ! '
+                'rtph264depay ! h264parse ! omxh264dec ! '
                 'videorate ! videoscale ! '
                 'video/x-raw, '
                 'width=(int)%d, height=(int)%d, '
@@ -76,6 +76,16 @@ class Camera:
                 'videoconvert ! '
                 'video/x-raw, format=BGR ! '
                 'appsink' % ("rtsp://" + location, self.width, self.height, self.fps))
+
+    def __mjpeg_pipeline(self, location="localhost:8080"):
+        return ('souphttpsrc location=%s do-timestamp=true is_live=true ! '
+                'multipartdemux ! nvjpegdec ! nvvidconv flip-method=%d ! '
+                'videoscale ! '
+                'video/x-raw, '
+                'width=(int)%d, height=(int)%d, '
+                'videoconvert ! '
+                'video/x-raw, format=BGR ! '
+                'appsink' % ("http://" + location, self.flip_method, self.width, self.height))
 
     def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
@@ -97,6 +107,9 @@ class Camera:
         elif self.camera_type == 2:
             # rtsp camera
             self.__open_rtsp()
+        elif self.camera_type == 3:
+            # http camera
+            self.__open_mjpeg()
         else:
             # it is USB camera
             self.__open_usb()
@@ -139,6 +152,15 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             raise RuntimeError('Error: Could not initialize RTSP camera.')
+
+    def __open_mjpeg(self):
+        # opens an interface to the MJPEG location
+        try:
+            # starts the rtsp client
+            self.cap = cv2.VideoCapture(self.__mjpeg_pipeline(self.rtsp_location), cv2.CAP_GSTREAMER)
+            self.__cam_opened = True
+        except RuntimeError:
+            raise RuntimeError('Error: Could not initialize MJPEG camera.')
 
     def __thread_read(self):
         # uses thread to read
