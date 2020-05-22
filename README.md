@@ -1,20 +1,22 @@
 # NanoCamera [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/thehapyone/NanoCamera/blob/master/LICENSE)
-A simple to use camera interface for the Jetson Nano for working with USB and CSI cameras in Python 3.
+A simple to use camera interface for the Jetson Nano for working with USB, CSI, IP and also RTSP cameras or streaming video in Python 3.
 
-It currently supports the following types of camera:
+It currently supports the following types of camera or streaming source:
 *  Works with CSI Cameras (Tested and Works)
 *  Works with various USB cameras (Tested with Logitech USB camera)
-*  Works with IP Cameras (Future version)
+*  Works with RTSP Streaming camera and video with hardware acceleration (only supports H.264 video codec)
+*  Works with IP Cameras(JPEG codec) or any MJPEG streaming source (Currently, supports CPU acceleration. TODO: Hardware acceleration)
 
 ## Features
 * It is OpenCV ready. Image file can be called directly with OpenCV imshow
 * Image file is a numpy RGB array.
 * Support different Camera Flip Mode (Counterclockwise, Rotate 180 degress, Clockwise - 90 degrees, Horizontal Flip, Vertical Flip)
-* Can be used with multiple cameras
-* Support Frame rate enforcement. *Only available for USB cameras.
+* Can be used with multiple cameras.
+* Support Frame rate enforcement. *Only available for USB, RTSP, and IP/MJPEG cameras.
 * Frame rate enforcement ensures the cameras work at the given frame rate using gstreamer videorate plugin
 * It is based on [Accelerated GStreamer Plugins](https://developer.download.nvidia.com/embedded/L4T/r32_Release_v1.0/Docs/Accelerated_GStreamer_User_Guide.pdf?uIzwdFeQNE8N-vV776ZCUUEbiJxYagieFEqUoYFM9XSf9tbslxWqFKnVHu8erbZZS20A7ADAIgmSQJvXZTb0LkuGl9GoD5HJz4263HcmYWZW0t2OeFSJKZOfuWZ-lF51Pva2DSDtu2QPs-junm7BhMB_9AMQRwExuDb5zIhf_o8PIbA4KKo)
 * Should work with other Jetson boards like Jetson TX1, TX2 and others (Not tested)
+* Support both Hardware and CPU acceleration.
 * Easily read images as ``numpy`` arrays with ``image = camera.read()``
 * Supports threaded read - available to all camera types. To enable a fast threaded read, you will to enable the enforce_fps: ``enforce_fps = True``
 
