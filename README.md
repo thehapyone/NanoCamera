@@ -95,17 +95,18 @@ rtsp_location = "192.168.1.26:8554/stream"
 camera = nano.Camera(camera_type=2, source=rtsp_location, width=640, height=480, fps=30)
 ```
 
-### Working with USB Camera
-For USB Cameras, set the ``camera_type = 1``, and set the ``device_id`` as well
-Find here for full [USB camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera.py)
+### Working with IP or any MJPEG streaming camera or video
+For IP/MJPEG Cameras, set the ``camera_type = 3``, and set the streaming ``source`` as well.
+Find here for full [MJPEG camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/MJPEG_camera.py)
 
 Python Example - 
-Create USB camera connected to ``/dev/video1``
+Create IP camera client connected to a camera streaming to ``http://192.168.1.26:80/stream``
 
 ```python
-import nanocamera as nano
-# Create the Camera instance for No rotation (flip=0) with size of 640 by 480
-camera = nano.Camera(camera_type=1, device_id=1, width=640, height=480, fps=30)
+# a location for the camera stream. Stream location without "http://"
+camera_stream = "192.168.1.26:80/stream"
+# Create the Camera instance
+camera = nano.Camera(camera_type=3, source=camera_stream, width=640, height=480, fps=30)
 ```
 
 ### Frame Rate Enforcement
@@ -150,6 +151,43 @@ if __name__ == '__main__':
     # remove camera object
     del camera
 ```
+
+A Simple program to read from the IP/MJPEG camera and display with OpenCV
+```python
+import cv2
+
+# from nanocamera.NanoCam import Camera
+import nanocamera as nano
+
+if __name__ == '__main__':
+    # requires the Camera streaming url. Something like this: http://localhost:80/stream
+    # For IP/MJPEG camera, the camera_type=3.
+    # This works with only camera steaming MJPEG format and not H.264 codec for now
+
+    # a location for the camera stream
+    camera_stream = "192.168.1.26:80"
+
+    # Create the Camera instance
+    camera = nano.Camera(camera_type=3, source=camera_stream, width=640, height=480, fps=30)
+    print('MJPEG/IP Camera is now ready')
+    while True:
+        try:
+            # read the camera image
+            frame = camera.read()
+            # display the frame
+            cv2.imshow("Video Frame", frame)
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                break
+        except KeyboardInterrupt:
+            break
+
+    # close the camera instance
+    camera.release()
+
+    # remove camera object
+    del camera
+```
+
 ## See also
 
 - [Platooning Robot](https://github.com/thehapyone/Platooning-Robot) - Resources for building collaborative robots
