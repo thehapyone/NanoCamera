@@ -11,8 +11,8 @@ class Camera:
         self.fps = fps
         self.camera_type = camera_type
         self.camera_id = device_id
-        # for rtsp camera only
-        self.rtsp_location = source
+        # for streaming camera only
+        self.camera_location = source
         self.flip_method = flip
         self.width = width
         self.height = height
@@ -148,7 +148,7 @@ class Camera:
         # opens an interface to the RTSP location
         try:
             # starts the rtsp client
-            self.cap = cv2.VideoCapture(self.__rtsp_pipeline(self.rtsp_location), cv2.CAP_GSTREAMER)
+            self.cap = cv2.VideoCapture(self.__rtsp_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
             raise RuntimeError('Error: Could not initialize RTSP camera.')
@@ -156,8 +156,8 @@ class Camera:
     def __open_mjpeg(self):
         # opens an interface to the MJPEG location
         try:
-            # starts the rtsp client
-            self.cap = cv2.VideoCapture(self.__mjpeg_pipeline(self.rtsp_location), cv2.CAP_GSTREAMER)
+            # starts the MJEP client
+            self.cap = cv2.VideoCapture(self.__mjpeg_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
             raise RuntimeError('Error: Could not initialize MJPEG camera.')
