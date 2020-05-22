@@ -4,7 +4,7 @@ A simple to use camera interface for the Jetson Nano for working with USB, CSI, 
 It currently supports the following types of camera or streaming source:
 *  Works with CSI Cameras (Tested and Works)
 *  Works with various USB cameras (Tested with Logitech USB camera)
-*  Works with RTSP Streaming camera and video with hardware acceleration (only supports H.264 video codec)
+*  Works with RTSP streaming camera and video with hardware acceleration (only supports H.264 video codec)
 *  Works with IP Cameras(JPEG codec) or any MJPEG streaming source (Currently, supports CPU acceleration. TODO: Hardware acceleration)
 
 ## Features
@@ -63,6 +63,39 @@ camera = nano.Camera(flip=0, width=1280, height=800, fps=30)
 if image is inverted, set ``flip = 2``
 
 ### Working with USB Camera
+For USB Cameras, set the ``camera_type = 1``, and set the ``device_id`` as well.
+Find here for full [USB camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera.py)
+
+Python Example - 
+Create USB camera connected to ``/dev/video1``
+
+```python
+import nanocamera as nano
+# Create the Camera instance for No rotation (flip=0) with size of 640 by 480
+camera = nano.Camera(camera_type=1, device_id=1, width=640, height=480, fps=30)
+```
+
+You can see connected USB cameras by running : 
+```bash
+ls /dev/video*
+```
+    # for usb camera /dev/video2, the device_id will be 2
+
+### Working with RTSP streaming camera or streaming video
+For RTSP source, set the ``camera_type = 2``, and set the ``source`` as well.
+Find here for full [RTSP camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/RTSP_camera.py)
+
+Python Example - 
+Create RTSP receiving camera client. RTSP location example:  ``rtsp://192.168.1.26:8554/stream``
+
+```python
+# a location for the rtsp stream. Stream location without "rtsp://"
+rtsp_location = "192.168.1.26:8554/stream"
+# Create the Camera instance
+camera = nano.Camera(camera_type=2, source=rtsp_location, width=640, height=480, fps=30)
+```
+
+### Working with USB Camera
 For USB Cameras, set the ``camera_type = 1``, and set the ``device_id`` as well
 Find here for full [USB camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera.py)
 
@@ -75,19 +108,13 @@ import nanocamera as nano
 camera = nano.Camera(camera_type=1, device_id=1, width=640, height=480, fps=30)
 ```
 
+### Frame Rate Enforcement
 Enable frame rate enforcement i.e force the camera to work at the given frame rate
 ```python
 import nanocamera as nano
 # enforce the capture frame rate with the enforce_fps=True
 camera = nano.Camera(camera_type=1, device_id=1, width=640, height=480, fps=30, enforce_fps=True)
 ```
-
-You can see connected USB cameras by running : 
-```bash
-ls /dev/video*
-```
-    # for usb camera /dev/video2, the device_id will be 2
-
 ### Reading Camera
 
 Call ``read()`` to read the latest image as a ``numpy.ndarray``. The color format is ``BGR8``.
