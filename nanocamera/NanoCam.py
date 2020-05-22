@@ -79,13 +79,14 @@ class Camera:
 
     def __mjpeg_pipeline(self, location="localhost:8080"):
         return ('souphttpsrc location=%s do-timestamp=true is_live=true ! '
-                'multipartdemux ! nvjpegdec ! nvvidconv flip-method=%d ! '
-                'videoscale ! '
+                'multipartdemux ! jpegdec ! '
+                'videorate ! videoscale ! '
                 'video/x-raw, '
                 'width=(int)%d, height=(int)%d, '
+                'framerate=(fraction)%d/1 ! '
                 'videoconvert ! '
                 'video/x-raw, format=BGR ! '
-                'appsink' % ("http://" + location, self.flip_method, self.width, self.height))
+                'appsink' % ("http://" + location, self.width, self.height, self.fps))
 
     def __usb_pipeline_enforce_fps(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
