@@ -19,6 +19,7 @@ class Camera:
         self.height = height
         self.enforce_fps = enforce_fps
 
+        self.debug_mode = debug
         # track error value
         '''
         -1 = Unknown error
@@ -28,7 +29,7 @@ class Camera:
         3 = Error: Could not read image from camera
         4 = Error: Could not release camera
         '''
-        self.errorValue = 0
+        self.error_value = 0
 
         # created a thread for enforcing FPS camera read and write
         self.cam_thread = None
@@ -142,7 +143,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.errorValue = 1
+            self.error_value = 1
             raise RuntimeError('Error: Could not initialize CSI camera.')
 
     def __open_usb(self):
@@ -158,7 +159,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.errorValue = 1
+            self.error_value = 1
             raise RuntimeError('Error: Could not initialize USB camera.')
 
     def __open_rtsp(self):
@@ -169,7 +170,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.errorValue = 1
+            self.error_value = 1
             raise RuntimeError('Error: Could not initialize RTSP camera.')
 
     def __open_mjpeg(self):
@@ -180,7 +181,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.errorValue = 1
+            self.error_value = 1
             raise RuntimeError('Error: Could not initialize MJPEG camera.')
 
     def __thread_read(self):
@@ -192,7 +193,7 @@ class Camera:
 
             except RuntimeError:
                 # update the error value parameter
-                self.errorValue = 2
+                self.error_value = 2
                 raise RuntimeError('Thread Error: Could not read image from camera')
         # reset the thread object:
         self.cam_thread = None
@@ -204,12 +205,17 @@ class Camera:
             return image
         else:
             # update the error value parameter
-            self.errorValue = 3
+            self.error_value = 3
             raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
         # read the camera stream
         try:
+            # check if debugging is activated
+            if self.debug_mode:
+                # check the error value
+                if self.error_value is not 0:
+                    raise RuntimeError("An error as occurred. Error Value:", self.error_value)
             if self.enforce_fps:
                 # if threaded read is enabled, it is possible the thread hasn't run yet
                 if self.frame is not None:
@@ -219,8 +225,8 @@ class Camera:
                     return self.__read()
             else:
                 return self.__read()
-        except RuntimeError:
-            raise RuntimeError('Error: Could not read image from camera')
+        except Exception as ee:
+            raise RuntimeError(ee.args)
 
     def release(self):
         # destroy the opencv camera object
@@ -237,5 +243,5 @@ class Camera:
             self.__cam_opened = False
         except RuntimeError:
             # update the error value parameter
-            self.errorValue = 4
+            self.error_value = 4
             raise RuntimeError('Error: Could not release camera')
