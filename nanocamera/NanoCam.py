@@ -1,12 +1,13 @@
 # Import the needed libraries
-import cv2
 import time
 from threading import Thread
+
+import cv2
 
 
 class Camera:
     def __init__(self, camera_type=0, device_id=1, source="localhost:8080", flip=0, width=640, height=480, fps=30,
-                 enforce_fps=False):
+                 enforce_fps=False, debug=False):
         # initialize all variables
         self.fps = fps
         self.camera_type = camera_type
@@ -17,6 +18,17 @@ class Camera:
         self.width = width
         self.height = height
         self.enforce_fps = enforce_fps
+
+        # track error value
+        '''
+        -1 = Unknown error
+        0 = No error
+        1 = Error: Could not initialize camera.
+        2 = Thread Error: Could not read image from camera
+        3 = Error: Could not read image from camera
+        4 = Error: Could not release camera
+        '''
+        self.errorValue = 0
 
         # created a thread for enforcing FPS camera read and write
         self.cam_thread = None
@@ -129,7 +141,9 @@ class Camera:
             self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
-            raise RuntimeError('Error: Could not initialize camera.')
+            # update the error value parameter
+            self.errorValue = 1
+            raise RuntimeError('Error: Could not initialize CSI camera.')
 
     def __open_usb(self):
         # opens an interface to the USB camera
@@ -143,6 +157,8 @@ class Camera:
                 self.cap = cv2.VideoCapture(self.__usb_pipeline(self.camera_name), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
+            # update the error value parameter
+            self.errorValue = 1
             raise RuntimeError('Error: Could not initialize USB camera.')
 
     def __open_rtsp(self):
@@ -152,6 +168,8 @@ class Camera:
             self.cap = cv2.VideoCapture(self.__rtsp_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
+            # update the error value parameter
+            self.errorValue = 1
             raise RuntimeError('Error: Could not initialize RTSP camera.')
 
     def __open_mjpeg(self):
@@ -161,6 +179,8 @@ class Camera:
             self.cap = cv2.VideoCapture(self.__mjpeg_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
             self.__cam_opened = True
         except RuntimeError:
+            # update the error value parameter
+            self.errorValue = 1
             raise RuntimeError('Error: Could not initialize MJPEG camera.')
 
     def __thread_read(self):
@@ -171,6 +191,8 @@ class Camera:
                 self.frame = self.__read()
 
             except RuntimeError:
+                # update the error value parameter
+                self.errorValue = 2
                 raise RuntimeError('Thread Error: Could not read image from camera')
         # reset the thread object:
         self.cam_thread = None
@@ -181,6 +203,8 @@ class Camera:
         if ret:
             return image
         else:
+            # update the error value parameter
+            self.errorValue = 3
             raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
@@ -212,4 +236,6 @@ class Camera:
             # update the cam opened variable
             self.__cam_opened = False
         except RuntimeError:
+            # update the error value parameter
+            self.errorValue = 4
             raise RuntimeError('Error: Could not release camera')
