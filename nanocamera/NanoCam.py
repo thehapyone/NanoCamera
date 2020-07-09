@@ -30,7 +30,7 @@ class Camera:
         4 = Error: Could not release camera
         '''
         # Need to keep an history of the error values
-        self.error_value = list()
+        self.__error_value = [0]
 
         # created a thread for enforcing FPS camera read and write
         self.cam_thread = None
@@ -136,6 +136,20 @@ class Camera:
         self.cam_thread.start()
         return self
 
+    # Tracks if camera is ready or not(maybe something went wrong)
+    def isReady(self):
+        return self.__cam_opened
+
+    # Tracks the camera error state.
+    def HasError(self):
+        # check the current state of the error history
+        latest_error = self.__error_value[-1]
+        if latest_error == 0:
+            # means no error has occured yet.
+            return self.__error_value, False
+        else:
+            return self.__error_value, True
+
     def __open_csi(self):
         # opens an inteface to the CSI camera
         try:
@@ -144,12 +158,12 @@ class Camera:
             if not self.cap.isOpened():
                 # raise an error here
                 # update the error value parameter
-                self.error_value.append(1)
+                self.__error_value.append(1)
                 raise RuntimeError('Error: Could not initialize CSI camera.')
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value.append(1)
+            self.__error_value.append(1)
             raise RuntimeError('Error: Could not initialize CSI camera.')
 
     def __open_usb(self):
@@ -165,13 +179,9 @@ class Camera:
                 if not self.cap.isOpened():
                     # raise an error here
                     # update the error value parameter
-                    self.error_value.append(1)
+                    self.__error_value.append(1)
                     raise RuntimeError('Error: Could not initialize USB camera.')
             self.__cam_opened = True
-        except RuntimeError:
-            # update the error value parameter
-            self.error_value.append(1)
-            raise RuntimeError('Error: Could not initialize USB camera.')
         except Exception as some_error:
             print("Exception in starting camera")
             print(some_error)
@@ -184,7 +194,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value.append(1)
+            self.__error_value.append(1)
             raise RuntimeError('Error: Could not initialize RTSP camera.')
 
     def __open_mjpeg(self):
@@ -195,7 +205,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value.append(1)
+            self.__error_value.append(1)
             raise RuntimeError('Error: Could not initialize MJPEG camera.')
 
     def __thread_read(self):
@@ -207,7 +217,7 @@ class Camera:
 
             except RuntimeError:
                 # update the error value parameter
-                self.error_value.append(2)
+                self.__error_value.append(2)
                 raise RuntimeError('Thread Error: Could not read image from camera')
         # reset the thread object:
         self.cam_thread = None
@@ -219,7 +229,7 @@ class Camera:
             return image
         else:
             # update the error value parameter
-            self.error_value.append(3)
+            self.__error_value.append(3)
             raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
@@ -228,8 +238,8 @@ class Camera:
             # check if debugging is activated
             if self.debug_mode:
                 # check the error value
-                if self.error_value is not 0:
-                    raise RuntimeError("An error as occurred. Error Value:", self.error_value)
+                if self.__error_value is not 0:
+                    raise RuntimeError("An error as occurred. Error Value:", self.__error_value)
             if self.enforce_fps:
                 # if threaded read is enabled, it is possible the thread hasn't run yet
                 if self.frame is not None:
@@ -257,5 +267,5 @@ class Camera:
             self.__cam_opened = False
         except RuntimeError:
             # update the error value parameter
-            self.error_value.append(4)
+            self.__error_value.append(4)
             raise RuntimeError('Error: Could not release camera')
