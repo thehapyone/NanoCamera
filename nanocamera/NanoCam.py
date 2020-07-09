@@ -141,6 +141,11 @@ class Camera:
         try:
             # initialize the first CSI camera
             self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
+            if not self.cap.isOpened():
+                # raise an error here
+                # update the error value parameter
+                self.error_value.append(1)
+                raise RuntimeError('Error: Could not initialize CSI camera.')
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
@@ -157,11 +162,19 @@ class Camera:
                 self.cap = cv2.VideoCapture(self.__usb_pipeline_enforce_fps(self.camera_name), cv2.CAP_GSTREAMER)
             else:
                 self.cap = cv2.VideoCapture(self.__usb_pipeline(self.camera_name), cv2.CAP_GSTREAMER)
+                if not self.cap.isOpened():
+                    # raise an error here
+                    # update the error value parameter
+                    self.error_value.append(1)
+                    raise RuntimeError('Error: Could not initialize USB camera.')
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
             self.error_value.append(1)
             raise RuntimeError('Error: Could not initialize USB camera.')
+        except Exception as some_error:
+            print("Exception in starting camera")
+            print(some_error)
 
     def __open_rtsp(self):
         # opens an interface to the RTSP location
