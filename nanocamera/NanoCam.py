@@ -250,10 +250,13 @@ class Camera:
             try:
                 self.frame = self.__read()
 
-            except RuntimeError:
+            except Exception:
                 # update the error value parameter
                 self.__error_value.append(2)
-                raise RuntimeError('Thread Error: Could not read image from camera')
+                self.__cam_opened = False
+                if self.debug_mode:
+                    raise RuntimeError('Thread Error: Could not read image from camera')
+                break
         # reset the thread object:
         self.cam_thread = None
 
@@ -265,7 +268,6 @@ class Camera:
         else:
             # update the error value parameter
             self.__error_value.append(3)
-            raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
         # read the camera stream
@@ -273,7 +275,7 @@ class Camera:
             # check if debugging is activated
             if self.debug_mode:
                 # check the error value
-                if self.__error_value is not 0:
+                if self.__error_value[-1] is not 0:
                     raise RuntimeError("An error as occurred. Error Value:", self.__error_value)
             if self.enforce_fps:
                 # if threaded read is enabled, it is possible the thread hasn't run yet
@@ -285,7 +287,8 @@ class Camera:
             else:
                 return self.__read()
         except Exception as ee:
-            raise RuntimeError(ee.args)
+            if self.debug_mode:
+                raise RuntimeError(ee.args)
 
     def release(self):
         # destroy the opencv camera object
@@ -303,4 +306,5 @@ class Camera:
         except RuntimeError:
             # update the error value parameter
             self.__error_value.append(4)
-            raise RuntimeError('Error: Could not release camera')
+            if self.debug_mode:
+                raise RuntimeError('Error: Could not release camera')
