@@ -29,7 +29,8 @@ class Camera:
         3 = Error: Could not read image from camera
         4 = Error: Could not release camera
         '''
-        self.error_value = 0
+        # Need to keep an history of the error values
+        self.error_value = list()
 
         # created a thread for enforcing FPS camera read and write
         self.cam_thread = None
@@ -143,7 +144,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value = 1
+            self.error_value.append(1)
             raise RuntimeError('Error: Could not initialize CSI camera.')
 
     def __open_usb(self):
@@ -159,7 +160,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value = 1
+            self.error_value.append(1)
             raise RuntimeError('Error: Could not initialize USB camera.')
 
     def __open_rtsp(self):
@@ -170,7 +171,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value = 1
+            self.error_value.append(1)
             raise RuntimeError('Error: Could not initialize RTSP camera.')
 
     def __open_mjpeg(self):
@@ -181,7 +182,7 @@ class Camera:
             self.__cam_opened = True
         except RuntimeError:
             # update the error value parameter
-            self.error_value = 1
+            self.error_value.append(1)
             raise RuntimeError('Error: Could not initialize MJPEG camera.')
 
     def __thread_read(self):
@@ -193,7 +194,7 @@ class Camera:
 
             except RuntimeError:
                 # update the error value parameter
-                self.error_value = 2
+                self.error_value.append(2)
                 raise RuntimeError('Thread Error: Could not read image from camera')
         # reset the thread object:
         self.cam_thread = None
@@ -205,7 +206,7 @@ class Camera:
             return image
         else:
             # update the error value parameter
-            self.error_value = 3
+            self.error_value.append(3)
             raise RuntimeError('Error: Could not read image from camera')
 
     def read(self):
@@ -243,5 +244,5 @@ class Camera:
             self.__cam_opened = False
         except RuntimeError:
             # update the error value parameter
-            self.error_value = 4
+            self.error_value.append(4)
             raise RuntimeError('Error: Could not release camera')
