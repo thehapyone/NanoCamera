@@ -6,7 +6,7 @@ import cv2
 
 
 class Camera:
-    def __init__(self, camera_type=0, device_id=1, source="localhost:8080", flip=0, width=640, height=480, fps=30,
+    def __init__(self, camera_type=0, device_id=0, source="localhost:8080", flip=0, width=640, height=480, fps=30,
                  enforce_fps=False, debug=False):
         # initialize all variables
         self.fps = fps
@@ -49,16 +49,17 @@ class Camera:
         if self.enforce_fps:
             self.start()
 
-    def __csi_pipeline(self):
-        return ('nvarguscamerasrc ! '
+    def __csi_pipeline(self, sensor_id=0):
+        return ('nvarguscamerasrc sensor-id=%d ! '
                 'video/x-raw(memory:NVMM), '
                 'width=(int)%d, height=(int)%d, '
                 'format=(string)NV12, framerate=(fraction)%d/1 ! '
                 'nvvidconv flip-method=%d ! '
                 'video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! '
                 'videoconvert ! '
-                'video/x-raw, format=(string)BGR ! appsink' % (
-                    self.width, self.height, self.fps, self.flip_method, self.width, self.height))
+                'video/x-raw, format=(string)BGR ! appsink' % (sensor_id,
+                                                               self.width, self.height, self.fps, self.flip_method,
+                                                               self.width, self.height))
 
     def __usb_pipeline(self, device_name="/dev/video1"):
         return ('v4l2src device=%s ! '
@@ -154,7 +155,7 @@ class Camera:
         # opens an inteface to the CSI camera
         try:
             # initialize the first CSI camera
-            self.cap = cv2.VideoCapture(self.__csi_pipeline(), cv2.CAP_GSTREAMER)
+            self.cap = cv2.VideoCapture(self.__csi_pipeline(self.camera_id), cv2.CAP_GSTREAMER)
             if not self.cap.isOpened():
                 # raise an error here
                 # update the error value parameter
