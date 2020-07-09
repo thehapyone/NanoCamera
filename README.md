@@ -188,6 +188,12 @@ if __name__ == '__main__':
     del camera
 ```
 
+## Debugging
+
+The library has some debugging builtin in to manage errors and exception that might occure during camera acquistion. 
+ - Using the "debug" variable to raise exceptions when an error occured. 
+ - Using the HasError to read current error state of the camera with or without debug enabled.
+ 
 ## See also
 
 - [Platooning Robot](https://github.com/thehapyone/Platooning-Robot) - Resources for building collaborative robots

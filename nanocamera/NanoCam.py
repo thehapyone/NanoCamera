@@ -159,12 +159,18 @@ class Camera:
                 # raise an error here
                 # update the error value parameter
                 self.__error_value.append(1)
-                raise RuntimeError('Error: Could not initialize CSI camera.')
+                raise RuntimeError()
             self.__cam_opened = True
         except RuntimeError:
-            # update the error value parameter
-            self.__error_value.append(1)
-            raise RuntimeError('Error: Could not initialize CSI camera.')
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError('Error: Could not initialize CSI camera.')
+        except Exception:
+            # some unknown error occurred
+            self.__error_value.append(-1)
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError("Unknown Error has occurred")
 
     def __open_usb(self):
         # opens an interface to the USB camera
@@ -180,33 +186,62 @@ class Camera:
                     # raise an error here
                     # update the error value parameter
                     self.__error_value.append(1)
-                    raise RuntimeError('Error: Could not initialize USB camera.')
+                    raise RuntimeError()
             self.__cam_opened = True
-        except Exception as some_error:
-            print("Exception in starting camera")
-            print(some_error)
+        except RuntimeError:
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError('Error: Could not initialize USB camera.')
+        except Exception:
+            # some unknown error occurred
+            self.__error_value.append(-1)
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError("Unknown Error has occurred")
 
     def __open_rtsp(self):
         # opens an interface to the RTSP location
         try:
             # starts the rtsp client
             self.cap = cv2.VideoCapture(self.__rtsp_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
+            if not self.cap.isOpened():
+                # raise an error here
+                # update the error value parameter
+                self.__error_value.append(1)
+                raise RuntimeError()
             self.__cam_opened = True
         except RuntimeError:
-            # update the error value parameter
-            self.__error_value.append(1)
-            raise RuntimeError('Error: Could not initialize RTSP camera.')
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError('Error: Could not initialize RTSP camera.')
+        except Exception:
+            # some unknown error occurred
+            self.__error_value.append(-1)
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError("Unknown Error has occurred")
 
     def __open_mjpeg(self):
         # opens an interface to the MJPEG location
         try:
             # starts the MJEP client
             self.cap = cv2.VideoCapture(self.__mjpeg_pipeline(self.camera_location), cv2.CAP_GSTREAMER)
+            if not self.cap.isOpened():
+                # raise an error here
+                # update the error value parameter
+                self.__error_value.append(1)
+                raise RuntimeError()
             self.__cam_opened = True
         except RuntimeError:
-            # update the error value parameter
-            self.__error_value.append(1)
-            raise RuntimeError('Error: Could not initialize MJPEG camera.')
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError('Error: Could not initialize MJPEG camera.')
+        except Exception:
+            # some unknown error occurred
+            self.__error_value.append(-1)
+            self.__cam_opened = False
+            if self.debug_mode:
+                raise RuntimeError("Unknown Error has occurred")
 
     def __thread_read(self):
         # uses thread to read
