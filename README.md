@@ -20,7 +20,8 @@ It currently supports the following types of camera or streaming source:
 * Easily read images as ``numpy`` arrays with ``image = camera.read()``
 * Supports threaded read - available to all camera types. To enable a fast threaded read, you will to enable the enforce_fps: ``enforce_fps = True``
 * Check the status of the camera after initialization with ``isReady()`` function. Returns ``True`` if ready and ``False`` if otherwise.
-
+* Provide debugging support. Added error codes and an optionally exception handling. See example in [Debugging](https://github.com/thehapyone/NanoCamera#debugging). Now you can restart the camera if somethings goes wrong or send an admin notice if your camera goes down.
+* Support multiple CSI cameras using the ``device_id`` parameter. See examples.
 
 ## Requirements
 This library requires OpenCV to be installed to work.
@@ -63,6 +64,17 @@ import nanocamera as nano
 camera = nano.Camera(flip=0, width=1280, height=800, fps=30)
 ```
 if image is inverted, set ``flip = 2``
+
+#### Multiple CSI Camera support.
+For Multiple CSI Cameras, set the ``device_id`` to the ID of the camera. 
+```python
+import nanocamera as nano
+# Create the Camera instance for No rotation (flip=0) with size of 1280 by 800
+# Connect to CSI camera with ID 0 (Default)
+camera_1 = nano.Camera(device_id=0, flip=0, width=1280, height=800, fps=30)
+# Connect to another CSI camera on the board with ID 1
+camera_2 = nano.Camera(device_id=1, flip=0, width=1280, height=800, fps=30)
+```
 
 ### Working with USB Camera
 For USB Cameras, set the ``camera_type = 1``, and set the ``device_id`` as well.
