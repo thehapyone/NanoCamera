@@ -276,7 +276,7 @@ class Camera:
             # check if debugging is activated
             if self.debug_mode:
                 # check the error value
-                if self.__error_value[-1] is not 0:
+                if self.__error_value[-1] != 0:
                     raise RuntimeError("An error as occurred. Error Value:", self.__error_value)
             if self.enforce_fps:
                 # if threaded read is enabled, it is possible the thread hasn't run yet
