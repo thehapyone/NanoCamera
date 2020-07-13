@@ -215,7 +215,19 @@ The library has some debugging builtin for managing expected and unexpected erro
  - Using the ``HasError()`` to read current error state of the camera with or without debug enabled.
  
 ### Errors and Exceptions Handling.
-Calling ``camere.HasError()`` at any point in time returns:
+Calling ``camere.HasError()`` at any point in time returns a list of error codes and a boolean value:
+```python
+# status holds a list.
+status = camera.HasError()
+print (status)
+>> ([0, 3], True)
+print ("Error codes list : ", status[0])
+>> Error codes: [0, 3]
+print ("Error State : ", status[1])
+>> Error State: True
+```
+
+Error codes are
 
     '''
     -1 = Unknown error
@@ -229,20 +241,42 @@ Calling ``camere.HasError()`` at any point in time returns:
 For example:
 
 ```python
-if camera.HasError() == 0: # means no error detected so far
+error_status = camera.HasError()
+if error_status[1] == False: # means no error detected so far
     # read the camera image
     frame = camera.read()
+    # print the current error codes
+    print (error_status[0])
     # display the frame
     cv2.imshow("Video Frame", frame)
     if cv2.waitKey(25) & 0xFF == ord('q'):
         break
 else:
     # an error has occured.
-    print ("An error with the camera. Error code : ", camera.HasError())
+    print ("An error with the camera. Error code : ", error_status[0])
 
 ```
  
-Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads.
+Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads. Without the ``debug`` enabled, your program will continue as normal and worse if your enabled the frame rate enforcement which uses the thread read function, you will keep getting image data but those images are old/static images.
+
+See example using the ``debug`` parameter.
+```python
+if __name__ == '__main__':
+    # Create the Camera instance
+    camera = camera = nano.Camera(camera_type=1, device_id=1, fps=30, debug=True)
+    # with debug=True. An Exception will be raised if something goes wrong.
+    while camera.isReady():
+        try:
+            # read the camera image
+            frame = camera.read()
+            # do something with the image frame
+            send_to_cloud(frame)
+        except Exception as e:
+            # error occured
+            print ("An exception has occured - ", e)
+            # send a notice to admin
+            break
+```
 
 ## See also
 
