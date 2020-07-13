@@ -1,4 +1,5 @@
-# NanoCamera [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/thehapyone/NanoCamera/blob/master/LICENSE)
+# NanoCamera [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/thehapyone/NanoCamera/blob/master/LICENSE) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/thehapyone/nanocamera/issues) [![HitCount](http://hits.dwyl.com/thehapyone/NanoCamera.svg)](http://hits.dwyl.com/thehapyone/NanoCamera)
+
 A simple to use camera interface for the Jetson Nano for working with USB, CSI, IP and also RTSP cameras or streaming video in Python 3.
 
 It currently supports the following types of camera or streaming source:
