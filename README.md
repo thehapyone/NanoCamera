@@ -132,10 +132,16 @@ camera = nano.Camera(camera_type=1, device_id=1, width=640, height=480, fps=30, 
 ```
 ### Reading Camera
 
-Call ``read()`` to read the latest image as a ``numpy.ndarray``. The color format is ``BGR8``.
+Call ``read()`` to read the latest image as a ``numpy.ndarray``. The color format is ``BGR``.
 
 ```python
 frame = camera.read()
+```
+
+#### Camera isReady?
+You can check if the camera is ready for streaming using ``isReady()`` 
+```python
+status = camera.isReady()
 ```
 
 A Simple program to read from the CSI camera and display with OpenCV
@@ -147,8 +153,8 @@ import nanocamera as nano
 if __name__ == '__main__':
     # Create the Camera instance
     camera = nano.Camera(flip=0, width=640, height=480, fps=30)
-    print('CSI Camera is now ready')
-    while True:
+    print('CSI Camera ready? - ', camera.isReady())
+    while camera.isReady():
         try:
             # read the camera image
             frame = camera.read()
@@ -184,7 +190,7 @@ if __name__ == '__main__':
     # Create the Camera instance
     camera = nano.Camera(camera_type=3, source=camera_stream, width=640, height=480, fps=30)
     print('MJPEG/IP Camera is now ready')
-    while True:
+    while camera.isReady():
         try:
             # read the camera image
             frame = camera.read()
@@ -204,10 +210,39 @@ if __name__ == '__main__':
 
 ## Debugging
 
-The library has some debugging builtin in to manage errors and exception that might occured during the camera acquistion. 
- - Using the "debug" variable to raise exceptions when an error occured. 
- - Using the HasError to read current error state of the camera with or without debug enabled.
+The library has some debugging builtin for managing expected and unexpected errors and exception that might occured during the camera acquisition or initialization. 
+ - Using the ``debug`` parameter to enable raising of exceptions when an error occurred. This is disabled in the default mode so you won't get any error if something goes wrong.
+ - Using the ``HasError()`` to read current error state of the camera with or without debug enabled.
  
+### Errors and Exceptions Handling.
+Calling ``camere.HasError()`` at any point in time returns:
+
+    '''
+    -1 = Unknown error
+    0 = No error
+    1 = Error: Could not initialize camera.
+    2 = Thread Error: Could not read image from camera
+    3 = Error: Could not read image from camera
+    4 = Error: Could not release camera
+    '''
+
+For example:
+
+```python
+if camera.HasError() == 0: # means no error detected so far
+    # read the camera image
+    frame = camera.read()
+    # display the frame
+    cv2.imshow("Video Frame", frame)
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        break
+else:
+    # an error has occured.
+    print ("An error with the camera. Error code : ", camera.HasError())
+
+```
+ 
+Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads.
 
 ## See also
 
