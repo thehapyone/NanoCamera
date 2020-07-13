@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
 ## Debugging
 
-The library has some debugging builtin for managing expected and unexpected errors and exception that might occured during the camera acquisition or initialization. 
+The library has some debugging builtin for managing expected, unexpected errors and exception that might occured during the camera acquisition or initialization. 
  - Using the ``debug`` parameter to enable raising of exceptions when an error occurred. This is disabled in the default mode so you won't get any error if something goes wrong.
  - Using the ``HasError()`` to read current error state of the camera with or without debug enabled.
  
@@ -224,7 +224,7 @@ status = camera.HasError()
 print (status)
 >> ([0, 3], True)
 print ("Error codes list : ", status[0])
->> Error codes: [0, 3]
+>> Error codes list : [0, 3]
 print ("Error State : ", status[1])
 >> Error State: True
 ```
@@ -311,7 +311,7 @@ I hope you find it useful. Heck, I wrote it for you- yeah, that's right- you.
 Contributing to this software is warmly welcomed. Don't forget to give it a star. 
 
 ## License
-This project is released under The MIT License.
+This project is released under the MIT License.
 
 ## See also
 
