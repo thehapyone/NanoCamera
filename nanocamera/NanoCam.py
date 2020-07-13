@@ -142,7 +142,7 @@ class Camera:
         return self.__cam_opened
 
     # Tracks the camera error state.
-    def HasError(self):
+    def hasError(self):
         # check the current state of the error history
         latest_error = self.__error_value[-1]
         if latest_error == 0:

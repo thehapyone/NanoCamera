@@ -215,13 +215,13 @@ if __name__ == '__main__':
 
 The library has some debugging builtin for managing expected, unexpected errors, and exceptions that might occur during the camera acquisition or initialization. 
  - Using the ``debug`` parameter to enable raising of exceptions when an error occurred. This is disabled in the default mode so you won't get any error if something goes wrong.
- - Using the ``HasError()`` to read the current error state of the camera with or without debug enabled.
+ - Using the ``hasError()`` to read the current error state of the camera with or without debug enabled.
  
 ### Errors and Exceptions Handling
-Calling ``camere.HasError()`` at any point in time returns a list of error codes and a boolean value:
+Calling ``camere.hasError()`` at any point in time returns a list of error codes and a boolean value:
 ```python
 # status holds a list.
-status = camera.HasError()
+status = camera.hasError()
 print (status)
 >> ([0, 3], True)
 print ("Error codes list : ", status[0])
@@ -244,7 +244,7 @@ Error codes are
 For example:
 
 ```python
-error_status = camera.HasError()
+error_status = camera.hasError()
 if error_status[1] == False: # means no error detected so far
     # read the camera image
     frame = camera.read()
@@ -303,7 +303,7 @@ The except cause might catch the following exceptions:
 >> Exception Type - Unknown Error has occurred
 >> Exception Type - Error: Could not release camera
 ```
-Without ``debug`` and even if there is error the program runs as nothing happened. The error can still be detected with the ``HasError()`` function.
+Without ``debug`` and even if there is error the program runs as nothing happened. The error can still be detected with the ``hasError()`` function.
 
 ## Thanks! & Give it a Star
 Thank you for downloading and enjoying the NanoCamera library.

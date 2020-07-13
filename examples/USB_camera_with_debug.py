@@ -37,7 +37,7 @@ if __name__ == '__main__':
 			except Exception as e:
 				print("Exception occurred in Reading ------ ")
 				print("Exception Type - ", e)
-				print(camera.HasError())
+				print(camera.hasError())
 				break
 
 		print("done here")
