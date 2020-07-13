@@ -259,7 +259,7 @@ else:
  
 Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads. Without the ``debug`` enabled, your program will continue as normal and worse if your enabled the frame rate enforcement which uses the thread read function, you will keep getting image data but those images are old/static images.
 
-See example using the ``debug`` parameter.
+See example using the ``debug`` parameter and handling exceptions at different levels.
 ```python
 if __name__ == '__main__':
     # Create the Camera instance
