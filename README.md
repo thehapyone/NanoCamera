@@ -19,6 +19,8 @@ It currently supports the following types of camera or streaming source:
 * Support both Hardware and CPU acceleration.
 * Easily read images as ``numpy`` arrays with ``image = camera.read()``
 * Supports threaded read - available to all camera types. To enable a fast threaded read, you will to enable the enforce_fps: ``enforce_fps = True``
+* Check the status of the camera after initialization with ``isReady()`` function. Returns ``True`` if ready and ``False`` if otherwise.
+
 
 ## Requirements
 This library requires OpenCV to be installed to work.
@@ -190,10 +192,11 @@ if __name__ == '__main__':
 
 ## Debugging
 
-The library has some debugging builtin in to manage errors and exception that might occure during camera acquistion. 
+The library has some debugging builtin in to manage errors and exception that might occured during the camera acquistion. 
  - Using the "debug" variable to raise exceptions when an error occured. 
  - Using the HasError to read current error state of the camera with or without debug enabled.
  
+
 ## See also
 
 - [Platooning Robot](https://github.com/thehapyone/Platooning-Robot) - Resources for building collaborative robots
