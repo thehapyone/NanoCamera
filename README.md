@@ -10,19 +10,19 @@ It currently supports the following types of camera or streaming source:
 If you like **NanoCamera** library - give it a star, or fork it and contribute!. Updates are always welcomed.
 
 ## Features
-* It is OpenCV ready. Image file can be called directly with OpenCV imshow
-* Image file is a numpy RGB array.
-* Support different Camera Flip Mode (Counterclockwise, Rotate 180 degress, Clockwise - 90 degrees, Horizontal Flip, Vertical Flip)
+* It is OpenCV ready. The image file can be called directly with OpenCV imshow
+* Image file is a NumPy RGB array.
+* Support different Camera Flip Mode (Counterclockwise, Rotate 180 degrees, Clockwise - 90 degrees, Horizontal Flip, Vertical Flip)
 * Can be used with multiple cameras.
 * Support Frame rate enforcement. *Only available for USB, RTSP, and IP/MJPEG cameras.
-* Frame rate enforcement ensures the cameras work at the given frame rate using gstreamer videorate plugin
+* Frame rate enforcement ensures the cameras work at the given frame rate using GStreamer video rate plugin
 * It is based on [Accelerated GStreamer Plugins](https://developer.download.nvidia.com/embedded/L4T/r32_Release_v1.0/Docs/Accelerated_GStreamer_User_Guide.pdf?uIzwdFeQNE8N-vV776ZCUUEbiJxYagieFEqUoYFM9XSf9tbslxWqFKnVHu8erbZZS20A7ADAIgmSQJvXZTb0LkuGl9GoD5HJz4263HcmYWZW0t2OeFSJKZOfuWZ-lF51Pva2DSDtu2QPs-junm7BhMB_9AMQRwExuDb5zIhf_o8PIbA4KKo)
 * Should work with other Jetson boards like Jetson TX1, TX2 and others (Not tested)
 * Support both Hardware and CPU acceleration.
 * Easily read images as ``numpy`` arrays with ``image = camera.read()``
-* Supports threaded read - available to all camera types. To enable a fast threaded read, you will to enable the enforce_fps: ``enforce_fps = True``
+* Supports threaded read - available to all camera types. To enable a fast threaded read, you will enable the enforce_fps: ``enforce_fps = True``
 * Check the status of the camera after initialization with ``isReady()`` function. Returns ``True`` if ready and ``False`` if otherwise.
-* Provide debugging support. Added error codes and an optionally exception handling. See example in [Debugging](https://github.com/thehapyone/NanoCamera#debugging). Now you can restart the camera if somethings goes wrong or send an admin notice if your camera goes down.
+* Provide debugging support. Added error codes and an optional exception handling. See example in [Debugging](https://github.com/thehapyone/NanoCamera#debugging). Now you can restart the camera if something goes wrong or send an admin notice if your camera goes down.
 * Support multiple CSI cameras using the ``device_id`` parameter. See examples.
 
 ## Requirements
@@ -53,7 +53,7 @@ For CSI Cameras, the ``camera_type = 0``.
 Find here for full [CSI camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/CSI_camera.py)
 
 Python Example - 
-Create CSI camera using default FPS=30, default image size: 640 by 480 and with no rotation (flip=0)
+Create a CSI camera using default FPS=30, default image size: 640 by 480 and with no rotation (flip=0)
 ```python
 import nanocamera as nano
 # Create the Camera instance for 640 by 480
@@ -65,7 +65,7 @@ import nanocamera as nano
 # Create the Camera instance for No rotation (flip=0) with size of 1280 by 800
 camera = nano.Camera(flip=0, width=1280, height=800, fps=30)
 ```
-if image is inverted, set ``flip = 2``
+if the image is inverted, set ``flip = 2``
 
 #### Multiple CSI Camera support.
 For Multiple CSI Cameras, set the ``device_id`` to the ID of the camera. 
@@ -95,7 +95,7 @@ You can see connected USB cameras by running :
 ```bash
 ls /dev/video*
 ```
-    # for usb camera /dev/video2, the device_id will be 2
+    # for USB camera /dev/video2, the device_id will be 2
 
 ### Working with RTSP streaming camera or streaming video
 For RTSP source, set the ``camera_type = 2``, and set the ``source`` as well.
@@ -116,7 +116,7 @@ For IP/MJPEG Cameras, set the ``camera_type = 3``, and set the streaming ``sourc
 Find here for full [MJPEG camera example](https://github.com/thehapyone/NanoCamera/tree/master/examples/MJPEG_camera.py)
 
 Python Example - 
-Create IP camera client connected to a camera streaming to ``http://192.168.1.26:80/stream``
+Create an IP camera client connected to a camera streaming to ``http://192.168.1.26:80/stream``
 
 ```python
 # a location for the camera stream. Stream location without "http://"
@@ -212,9 +212,9 @@ if __name__ == '__main__':
 
 ## Debugging
 
-The library has some debugging builtin for managing expected, unexpected errors and exception that might occured during the camera acquisition or initialization. 
+The library has some debugging builtin for managing expected, unexpected errors, and exceptions that might occur during the camera acquisition or initialization. 
  - Using the ``debug`` parameter to enable raising of exceptions when an error occurred. This is disabled in the default mode so you won't get any error if something goes wrong.
- - Using the ``HasError()`` to read current error state of the camera with or without debug enabled.
+ - Using the ``HasError()`` to read the current error state of the camera with or without debug enabled.
  
 ### Errors and Exceptions Handling
 Calling ``camere.HasError()`` at any point in time returns a list of error codes and a boolean value:
@@ -259,9 +259,9 @@ else:
 
 ```
  
-Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads. Without the ``debug`` enabled, your program will continue as normal and worse if your enabled the frame rate enforcement which uses the thread read function, you will keep getting image data but those images are old/static images.
+Enabling the ``debug = True`` parameter allows raising an exception to the main program. This might be useful for parallel computing if you running multiple threads. Without the ``debug`` enabled, your program will continue as normal, and worse if you're enabled the frame rate enforcement which uses the thread read function, you will keep getting image data but those images are old/static images.
 
-See example using the ``debug`` parameter and handling exceptions at different levels. Find here for full [debugging example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera_with_debug.py)
+See an example using the ``debug`` parameter and handling exceptions at different levels. Find here for full [debugging example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera_with_debug.py)
 
 ```python
 if __name__ == '__main__':
@@ -294,7 +294,7 @@ if __name__ == '__main__':
             # handle the exception from releasing the camera 
 
 ```
-If an error occured, a Runtime Error will be raised catching the following exceptions:
+If an error occurred, a Runtime Error will be raised catching the following exceptions:
 ```python
 The except cause might catch the following exceptions:
 >> Exception Type - Error: Could not initialize USB Camera
@@ -302,7 +302,7 @@ The except cause might catch the following exceptions:
 >> Exception Type - Unknown Error has occurred
 >> Exception Type - Error: Could not release camera
 ```
-Without ``debug`` and even if there is error the program runs like nothing happened. The error can still be detected with the ``HasError()`` function.
+Without ``debug`` and even if there is error the program runs as nothing happened. The error can still be detected with the ``HasError()`` function.
 
 ## Thanks! & Give it a Star
 Thank you for downloading and enjoying the NanoCamera library.
