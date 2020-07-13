@@ -7,6 +7,8 @@ It currently supports the following types of camera or streaming source:
 *  Works with RTSP streaming camera and video with hardware acceleration (only supports H.264 video codec)
 *  Works with IP Cameras(JPEG codec) or any MJPEG streaming source (Currently, supports CPU acceleration. TODO: Hardware acceleration)
 
+If you like **NanoCamera** library - give it a star, or fork it and contribute!. Updates are always welcomed.
+
 ## Features
 * It is OpenCV ready. Image file can be called directly with OpenCV imshow
 * Image file is a numpy RGB array.
@@ -214,7 +216,7 @@ The library has some debugging builtin for managing expected and unexpected erro
  - Using the ``debug`` parameter to enable raising of exceptions when an error occurred. This is disabled in the default mode so you won't get any error if something goes wrong.
  - Using the ``HasError()`` to read current error state of the camera with or without debug enabled.
  
-### Errors and Exceptions Handling.
+### Errors and Exceptions Handling
 Calling ``camere.HasError()`` at any point in time returns a list of error codes and a boolean value:
 ```python
 # status holds a list.
@@ -301,6 +303,15 @@ The except cause might catch the following exceptions:
 >> Exception Type - Error: Could not release camera
 ```
 Without ``debug`` and even if there is error the program runs like nothing happened. The error can still be detected with the ``HasError()`` function.
+
+## Thanks! & Give it a Star
+Thank you for downloading and enjoying the NanoCamera library.
+I hope you find it useful. Heck, I wrote it for you- yeah, that's right- you.
+
+Contributing to this software is warmly welcomed. Don't forget to give it a star. 
+
+## License
+This project is released under The MIT License.
 
 ## See also
 
