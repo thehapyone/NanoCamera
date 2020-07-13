@@ -17,7 +17,7 @@ if __name__ == '__main__':
 		print("camera stream")
 		camera = nano.Camera(camera_type=1, device_id=0, width=640, height=480, fps=30, debug=True)
 	except Exception as e:
-		print("Exception occured ------ ")
+		print("Exception occurred ------ ")
 		print("Exception Type - ", e)
 
 	else:
@@ -27,6 +27,7 @@ if __name__ == '__main__':
 				# read the camera image
 				frame = camera.read()
 				print("do something with frame")
+			# send_to_cloud(frame)
 			# display the frame
 			# cv2.imshow("Video Frame", frame)
 			# if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -34,7 +35,7 @@ if __name__ == '__main__':
 			except KeyboardInterrupt:
 				break
 			except Exception as e:
-				print("Exception occured in Reading ------ ")
+				print("Exception occurred in Reading ------ ")
 				print("Exception Type - ", e)
 				print(camera.HasError())
 				break

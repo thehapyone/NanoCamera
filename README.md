@@ -259,24 +259,48 @@ else:
  
 Enabling the ``debug = True`` parameter allows to raise an exception to the main program. This might be useful for parallel computing if you running multiple threads. Without the ``debug`` enabled, your program will continue as normal and worse if your enabled the frame rate enforcement which uses the thread read function, you will keep getting image data but those images are old/static images.
 
-See example using the ``debug`` parameter and handling exceptions at different levels.
+See example using the ``debug`` parameter and handling exceptions at different levels. Find here for full [debugging example](https://github.com/thehapyone/NanoCamera/tree/master/examples/USB_camera_with_debug.py)
+
 ```python
 if __name__ == '__main__':
-    # Create the Camera instance
-    camera = camera = nano.Camera(camera_type=1, device_id=1, fps=30, debug=True)
     # with debug=True. An Exception will be raised if something goes wrong.
-    while camera.isReady():
+    # Create the Camera instance
+    try:
+        # Create the Camera instance
+        print("camera stream")
+        camera = nano.Camera(camera_type=1, device_id=0, fps=30, debug=True)
+    except Exception as e:
+        # handle the exception from opening camera session
+    else:
+        print('USB Camera ready? - ', camera.isReady())
+        while True:
+            try:
+                # read the camera image
+                frame = camera.read()
+                # do something with frame like: send_to_cloud(frame)
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                # handle the exception from reading
+                break
+    
+        print("done here")
         try:
-            # read the camera image
-            frame = camera.read()
-            # do something with the image frame
-            send_to_cloud(frame)
+            # close the camera instance
+            camera.release()
         except Exception as e:
-            # error occured
-            print ("An exception has occured - ", e)
-            # send a notice to admin
-            break
+            # handle the exception from releasing the camera 
+
 ```
+If an error occured, a Runtime Error will be raised catching the following exceptions:
+```python
+The except cause might catch the following exceptions:
+>> Exception Type - Error: Could not initialize USB Camera
+>> Exception Type - An error as occurred. Error Value: [0, 3]
+>> Exception Type - Unknown Error has occurred
+>> Exception Type - Error: Could not release camera
+```
+Without ``debug`` and even if there is error the program runs like nothing happened. The error can still be detected with the ``HasError()`` function.
 
 ## See also
 
