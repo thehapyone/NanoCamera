@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # a location for the rtsp stream
     rtsp_location = "192.168.1.26:8554/stream"
     # Create the Camera instance
-    camera = nano.Camera(camera_type=2, source=rtsp_location, width=640, height=480, fps=30)
+    camera = nano.Camera(camera_type=nano.RTSP, source=rtsp_location, width=640, height=480, fps=30)
     print('RTSP Camera is now ready')
     while True:
         try:

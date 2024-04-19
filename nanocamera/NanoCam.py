@@ -5,8 +5,14 @@ from threading import Thread
 import cv2
 
 
+CSI: int = 0
+USB: int = 1
+RTSP: int = 2
+MJPEG: int = 3 
+
+
 class Camera:
-    def __init__(self, camera_type=0, device_id=0, source="localhost:8080", flip=0, width=640, height=480, fps=30,
+    def __init__(self, camera_type=CSI, device_id=0, source="localhost:8080", flip=0, width=640, height=480, fps=30,
                  enforce_fps=False, debug=False):
         # initialize all variables
         self.fps = fps
@@ -117,18 +123,20 @@ class Camera:
     def open(self):
         # open the camera inteface
         # determine what type of camera to open
-        if self.camera_type == 0:
+        if self.camera_type == CSI:
             # then CSI camera
             self.__open_csi()
-        elif self.camera_type == 2:
+        elif self.camera_type == USB:
+            # it is USB camera
+            self.__open_usb()
+        elif self.camera_type == RTSP:
             # rtsp camera
             self.__open_rtsp()
-        elif self.camera_type == 3:
+        elif self.camera_type == MJPEG:
             # http camera
             self.__open_mjpeg()
         else:
-            # it is USB camera
-            self.__open_usb()
+            raise Exception("Not Support Camera Type %d", self.camera_type)
         return self
 
     def start(self):
