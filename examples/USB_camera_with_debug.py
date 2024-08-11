@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	try:
 		# Create the Camera instance
 		print("camera stream")
-		camera = nano.Camera(camera_type=1, device_id=0, width=640, height=480, fps=30, debug=True)
+		camera = nano.Camera(camera_type=nano.USB, device_id=0, width=640, height=480, fps=30, debug=True)
 	except Exception as e:
 		print("Exception occurred ------ ")
 		print("Exception Type - ", e)

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     camera_stream = "192.168.1.26:80"
 
     # Create the Camera instance
-    camera = nano.Camera(camera_type=3, source=camera_stream, width=640, height=480, fps=30)
+    camera = nano.Camera(camera_type=nano.MJPEG, source=camera_stream, width=640, height=480, fps=30)
     print('MJPEG/IP Camera is now ready')
     while True:
         try:
